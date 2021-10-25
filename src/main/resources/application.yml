@@ -4,6 +4,9 @@ jwt:
 
 server:
   port: 8081
+  error:
+    whitelabel:
+      enabled: false # This is the better way to handle the page not found page.
 
 spring:
   datasource:
@@ -17,3 +20,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+# The config below is how we override the default spring spring boot whitelabel error
+#  page when we try to access a page that doesn't exist.
+
+# This approach is not the best because the class we are disabling has
+# a lot of other functions in it and must times our application might need those
+
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#  web:
+#    resources:
+#      add-mappings: false
