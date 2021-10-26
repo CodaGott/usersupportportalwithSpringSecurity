@@ -5,6 +5,7 @@ import com.supportportal.domain.UserPrincipal;
 import com.supportportal.exception.domain.EmailExistException;
 import com.supportportal.exception.domain.UserNotFoundException;
 import com.supportportal.exception.domain.UsernameExistException;
+import com.supportportal.payload.LoginRequest;
 import com.supportportal.payload.RegistrationRequest;
 import com.supportportal.repository.UserRepository;
 import com.supportportal.service.UserService;
@@ -147,4 +148,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
+
+    @Override
+    public User login(LoginRequest request) throws UserNotFoundException, UsernameExistException, EmailExistException{
+        return null;
+    }
+
+
 }
