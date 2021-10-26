@@ -8,6 +8,7 @@ import com.supportportal.exception.domain.UsernameExistException;
 import com.supportportal.payload.LoginRequest;
 import com.supportportal.payload.RegistrationRequest;
 import com.supportportal.repository.UserRepository;
+import com.supportportal.service.LoginAttemptService;
 import com.supportportal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -34,6 +35,8 @@ import static com.supportportal.enumeration.Role.ROLE_USER;
 @Qualifier("UserDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Autowired
     private UserRepository userRepository;
@@ -50,6 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error(USER_NOT_FOUND_BY_USERNAME + username);
             throw new UsernameNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
         }else {
+            validateLoginAttempt(user);
             user.setLastLoginDayDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
@@ -57,6 +61,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             UserPrincipal userPrincipal = new UserPrincipal(user);
             log.info(RETURNING_FOUND_USER_BY_USERNAME + username);
             return userPrincipal;
+        }
+    }
+
+    private void validateLoginAttempt(User user) {
+        if (user.getIsNotLocked()){
+            user.setIsNotLocked(!loginAttemptService.hasExceededAttempts(user.getUsername()));
+        }else {
+            loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());;
         }
     }
 
