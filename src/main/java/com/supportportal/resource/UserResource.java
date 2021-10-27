@@ -41,7 +41,7 @@ public class UserResource extends ExceptionHandling {
 
 
     @PostMapping(path = {"/","/register"})
-    public ResponseEntity<?> showUser(@RequestBody RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException {
+    public ResponseEntity<?> register(@RequestBody RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException {
         User user = userService.register(request);
         return new ResponseEntity<>(user, CREATED);
     }
