@@ -8,6 +8,7 @@ import com.supportportal.exception.domain.UsernameExistException;
 import com.supportportal.payload.LoginRequest;
 import com.supportportal.payload.RegistrationRequest;
 import com.supportportal.repository.UserRepository;
+import com.supportportal.service.EmailService;
 import com.supportportal.service.LoginAttemptService;
 import com.supportportal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,9 @@ import static com.supportportal.enumeration.Role.ROLE_USER;
 @Service
 @Qualifier("UserDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private LoginAttemptService loginAttemptService;
@@ -73,7 +78,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User register(RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException {
+    public User register(RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException {
         validateNewUsernameAndEmail(StringUtils.EMPTY, request.getUsername(), request.getEmail());
         User user = new User();
         user.setUserId(generateUserId());
@@ -90,6 +95,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl());
+        emailService.sendNewPassword(request.getFirstName(), password, request.getEmail());
         log.info("New user password: " + password);
         return userRepository.save(user);
     }

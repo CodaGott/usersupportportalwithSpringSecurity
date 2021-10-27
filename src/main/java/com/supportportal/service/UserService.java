@@ -8,11 +8,12 @@ import com.supportportal.payload.LoginRequest;
 import com.supportportal.payload.RegistrationRequest;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @Service
 public interface UserService {
-    User register(RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException;
+    User register(RegistrationRequest request) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException;
     List<User> getUsers();
     User findUserByUsername(String username);
     User findUserByEmail(String email);
